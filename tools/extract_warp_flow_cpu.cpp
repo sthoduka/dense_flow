@@ -29,9 +29,14 @@ int main(int argc, char** argv){
     int device_id = cmd.get<int>("device_id");
     int step = cmd.get<int>("step");
 
+    std::cout << "vid file "<< vidFile << std::endl;
+    std::cout << "x flow "<< xFlowFile << std::endl;
+    std::cout << "y flow "<< yFlowFile << std::endl;
+    std::cout << "output style "<< output_style << std::endl;
+
 	std::vector<std::vector<uchar> > out_vec_x, out_vec_y;
 
-	calcDenseWarpFlowGPU(vidFile, bound, type, step, device_id,
+	calcDenseWarpFlowCPU(vidFile, bound, type, step, device_id,
 					 out_vec_x, out_vec_y);
 
 	if (output_style == "dir") {

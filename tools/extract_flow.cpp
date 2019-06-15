@@ -37,10 +37,6 @@ int main(int argc, char** argv)
 		writeImages(out_vec_y, yFlowFile);
 		writeImages(out_vec_img, imgFile);
 	}else{
-//		LOG(INFO)<<"Writing results to Zip archives";
-		writeZipFile(out_vec_x, "x_%05d.jpg", xFlowFile+".zip");
-		writeZipFile(out_vec_y, "y_%05d.jpg", yFlowFile+".zip");
-		writeZipFile(out_vec_img, "img_%05d.jpg", imgFile+".zip");
 	}
 	return 0;
 }
