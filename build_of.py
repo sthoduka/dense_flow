@@ -3,6 +3,7 @@ __author__ = 'yjxiong'
 import cv2
 import os
 from multiprocessing import Pool, current_process
+import glob
 
 import argparse
 out_path = ''
@@ -19,13 +20,13 @@ def dump_frames(vid_path):
     except OSError:
         pass
     file_list = []
-    for i in xrange(fcount):
+    for i in range(fcount):
         ret, frame = video.read()
         assert ret
         cv2.imwrite('{}/{:06d}.jpg'.format(out_full_path, i), frame)
         access_path = '{}/{:06d}.jpg'.format(vid_name, i)
         file_list.append(access_path)
-    print '{} done'.format(vid_name)
+    print('{} done'.format(vid_name))
     return file_list
 
 
@@ -48,7 +49,7 @@ def run_optical_flow(vid_item, dev_id=0):
     cmd = './build/extract_gpu -f={} -x={} -y={} -i={} -b=20 -t=1 -d={} -s=1 -o=zip'.format(vid_path, flow_x_path, flow_y_path, image_path, dev_id)
 
     os.system(cmd)
-    print '{} {} done'.format(vid_id, vid_name)
+    print ('{} {} done'.format(vid_id, vid_name))
     return True
 
 def run_warp_optical_flow(vid_item, dev_id=0):
@@ -66,10 +67,10 @@ def run_warp_optical_flow(vid_item, dev_id=0):
     flow_x_path = '{}/flow_x'.format(out_full_path)
     flow_y_path = '{}/flow_y'.format(out_full_path)
 
-    cmd = './build/extract_warp_gpu -f {} -x {} -y {} -b 20 -t 1 -d {} -s 1 -o zip'.format(vid_path, flow_x_path, flow_y_path, dev_id)
+    cmd = './build/extract_warp_cpu -f={} -x={} -y={} -b=20 -t=1 -d={} -s=1 -o=dir'.format(vid_path, flow_x_path, flow_y_path, dev_id)
 
     os.system(cmd)
-    print 'warp on {} {} done'.format(vid_id, vid_name)
+    print ('warp on {} {} done'.format(vid_id, vid_name))
     return True
 
 
@@ -78,7 +79,7 @@ if __name__ == '__main__':
     parser.add_argument("src_dir")
     parser.add_argument("out_dir")
     parser.add_argument("--num_worker", type=int, default=8)
-    parser.add_argument("--flow_type", type=str, default='tvl1', choices=['tvl1', 'warp_tvl1'])
+    parser.add_argument("--flow_type", type=str, default='warp_tvl1', choices=['tvl1', 'warp_tvl1'])
 
     args = parser.parse_args()
 
@@ -88,10 +89,10 @@ if __name__ == '__main__':
     flow_type = args.flow_type
 
 
-    vid_list = glob.glob(src_path+'/*.mp4')
-    print len(vid_list)
+    vid_list = glob.glob(src_path+'/*.avi')
+    print( len(vid_list))
     pool = Pool(num_worker)
     if flow_type == 'tvl1':
-        pool.map(run_optical_flow, zip(vid_list, xrange(len(vid_list))))
+        pool.map(run_optical_flow, zip(vid_list, range(len(vid_list))))
     elif flow_type == 'warp_tvl1':
-        pool.map(run_warp_optical_flow, zip(vid_list, xrange(len(vid_list))))
+        pool.map(run_warp_optical_flow, zip(vid_list, range(len(vid_list))))
